@@ -41,4 +41,4 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform
-        run: terraform plan -var="username_prefix=${{ env.ENV_USERNAME_PREFIX }}" -var="user_count=${{ secrets.ENV_USER_COUNT }}" -var="user_start=${{ env.ENV_USER_START }}" -var="rg-suffix=${{ env.ENV_RG_SUFFIX }}" -var="location=${{ env.ENV_LOCATION }}" -var="password=${{ secrets.BASIC_PASSWORD }}" -no-color -out=tfplan
+        run: terraform plan -var="username_prefix=${{ env.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.ENV_USER_COUNT }}" -var="user_start=${{ env.ENV_USER_START }}" -var="rg-suffix=${{ env.ENV_RG_SUFFIX }}" -var="location=${{ env.ENV_LOCATION }}" -var="password=${{ secrets.BASIC_PASSWORD }}" -no-color -out=tfplan

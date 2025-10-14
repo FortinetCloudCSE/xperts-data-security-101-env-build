@@ -13,7 +13,7 @@ locals {
     format("%s%02s", local.username_prefix, i) => { username = format("%s%02s", local.username_prefix, i) }
   }
 }
-
+  
 module "module_data-security-101" {
   for_each = local.environments
 

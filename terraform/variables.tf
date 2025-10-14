@@ -5,11 +5,11 @@ variable "username_prefix" {
 
 variable "user_count" {
   description = "Number of users to create"
-  type        = number
+  type        = string
 }
 variable "user_start" {
   description = "Starting index for user numbering"
-  type        = number
+  type        = string
 }
 
 variable "rg-suffix" {
@@ -24,5 +24,10 @@ variable "location" {
 
 variable "password" {
   description = "Password for the admin user"
+  type        = string
+}
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
   type        = string
 }

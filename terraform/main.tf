@@ -1,8 +1,8 @@
 locals {
 
   username_prefix = var.username_prefix
-  user_count      = var.user_count
-  user_start      = var.user_start
+  user_count      = tonumber(var.user_count)
+  user_start      = tonumber(var.user_start)
 
   rg-suffix = var.rg-suffix
   location  = var.location

@@ -41,4 +41,4 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform
-        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"-var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ secrets.BASIC_PASSWORD }}" -no-color -out=tfplan
+        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ secrets.BASIC_PASSWORD }}" -no-color -out=tfplan

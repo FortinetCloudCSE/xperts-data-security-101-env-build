@@ -1,4 +1,4 @@
-name: Terraform Azure Deployment
+name: PowerShell Azure
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       UserCount:
-        description: 'Number of users to deploy (0-99)'
+        description: 'Number of users should match Terraform build (0-99)'
         required: true
         default: '0'
         type: string
@@ -55,4 +55,5 @@ jobs:
       - name: Run Azure PowerShell script
         shell: pwsh
         run: |
+          Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
           Get-AzResourceGroup

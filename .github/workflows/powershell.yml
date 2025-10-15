@@ -51,7 +51,6 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: |
-            Install-Module -Name Microsoft.Entra.DirectoryManagement -AllowClobber -Force -Scope CurrentUser
             Install-Module -Name Microsoft.Graph.Authentication -AllowClobber -Force -Scope CurrentUser
 
             $clientCredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ${{ secrets.AZURE_CLIENT_ID }}, $(ConvertTo-SecureString -String ${{ secrets.AZURE_CLIENT_SECRET }} -AsPlainText -Force)

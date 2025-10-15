@@ -36,7 +36,7 @@ jobs:
       - name: Terraform Init
         id: init
         working-directory: ./terraform
-        run: terraform init -backend-config="resource_group_name=${{ secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.BACKEND_AZURE_STORAGE_CONTAINER_NAME }}" -backend-config="key=terraform.tfstate"
+        run: terraform init -backend-config="resource_group_name=${{ secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.BACKEND_AZURE_STORAGE_CONTAINER_NAME }}"
 
       - name: Terraform Validate
         id: validate
@@ -46,10 +46,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform
-        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ secrets.BASIC_PASSWORD }}" -no-color
+        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -no-color -out=tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         id: apply
         working-directory: ./terraform
-        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -auto-approve -no-color
+        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -auto-approve -no-color tfplan

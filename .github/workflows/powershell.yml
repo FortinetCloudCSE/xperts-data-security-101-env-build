@@ -51,6 +51,7 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
-          Get-AzResourceGroup
+          Install-Module -Name Microsoft.Entra.DirectoryManagement-AllowClobber -Force -Scope CurrentUser
+          
           Connect-MgGraph
           Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *

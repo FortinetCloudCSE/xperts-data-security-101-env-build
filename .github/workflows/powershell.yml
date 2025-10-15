@@ -53,6 +53,6 @@ jobs:
           Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
           Install-Module -Name Microsoft.Entra.DirectoryManagement -AllowClobber -Force -Scope CurrentUser
           Install-Module -Name Microsoft.Entra.Authentication -AllowClobber -Force -Scope CurrentUser
-          
-          Connect-MgGraph
+
+          Connect-MgGraphConnect-Entra -Scopes 'Organization.Read.All, LicenseAssignment.Read.All'
           Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *

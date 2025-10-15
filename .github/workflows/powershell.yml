@@ -54,5 +54,6 @@ jobs:
             Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
             Install-Module -Name Microsoft.Entra.DirectoryManagement -AllowClobber -Force -Scope CurrentUser
             Install-Module -Name Microsoft.Entra.Authentication -AllowClobber -Force -Scope CurrentUser
+            Connect-Entra -Scopes "Organization.Read.All, LicenseAssignment.ReadWrite.All"
             Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *
           azPSVersion: "latest"

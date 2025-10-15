@@ -51,9 +51,9 @@ jobs:
         uses: azure/powershell@v2
         with:
           inlineScript: |
-            Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
             Install-Module -Name Microsoft.Entra.DirectoryManagement -AllowClobber -Force -Scope CurrentUser
             Install-Module -Name Microsoft.Entra.Authentication -AllowClobber -Force -Scope CurrentUser
-            Connect-Entra -Scopes "Organization.Read.All, LicenseAssignment.ReadWrite.All"
+            $clientCredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ${{ secrets.AZURE_CLIENT_ID }}, $(ConvertTo-SecureString -String ${{ secrets.AZURE_CLIENT_SECRET }} -AsPlainText -Force)
+            Connect-MgGraph -TenantId ${{ secrets.AZURE_TENANT_ID }} -ClientSecretCredential $clientCredentials -NoWelcome
             Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *
           azPSVersion: "latest"

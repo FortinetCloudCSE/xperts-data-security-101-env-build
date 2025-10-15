@@ -8,16 +8,39 @@ on:
     branches:
       - main
   workflow_dispatch:
-
+    inputs:
+      UserCount:
+        description: 'Number of users to deploy (0-99)'
+        required: true
+        default: '0'
+        type: string
+      UserStart:
+        description: 'Starting index for user numbering'
+        required: false
+        default: '0'
+        type: string
 jobs:
   terraform:
     permissions:
       id-token: write
       contents: read
 
-    runs-on: ubuntu-latest # Or a self-hosted runner
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Set up GitHub Actions variables
+        run: |
+          if [[ ${{ github.event_name == 'workflow_dispatch' }} == true ]]; then
+            user_start=${{ inputs.UserStart }}
+            user_count=${{ inputs.UserCount }}
+          else
+            user_start=${{ vars.ENV_USER_START }}
+            user_count=${{ vars.ENV_USER_COUNT }}
+          fi
+
+          echo "user_start=$user_start" >> $GITHUB_ENV
+          echo "user_count=$user_count" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -46,7 +69,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform
-        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -no-color -out=tfplan
+        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -no-color -out=tfplan
 
       - name: Terraform Apply
         if: |

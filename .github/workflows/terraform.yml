@@ -49,7 +49,9 @@ jobs:
         run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -no-color -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: |
+          (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch')
         id: apply
         working-directory: ./terraform
         run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -auto-approve -no-color tfplan

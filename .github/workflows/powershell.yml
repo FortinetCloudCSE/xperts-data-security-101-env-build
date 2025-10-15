@@ -47,12 +47,12 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-      - name: Run Azure PowerShell script
-        shell: pwsh
-        run: |
-          Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
-          Install-Module -Name Microsoft.Entra.DirectoryManagement -AllowClobber -Force -Scope CurrentUser
-          Install-Module -Name Microsoft.Entra.Authentication -AllowClobber -Force -Scope CurrentUser
-
-          Connect-Entra -Scopes 'Organization.Read.All, LicenseAssignment.Read.All'
-          Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *
+      - name: Run Azure PowerShell inline script
+        uses: azure/powershell@v2
+        with:
+          inlineScript: |
+            Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
+            Install-Module -Name Microsoft.Entra.DirectoryManagement -AllowClobber -Force -Scope CurrentUser
+            Install-Module -Name Microsoft.Entra.Authentication -AllowClobber -Force -Scope CurrentUser
+            Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *
+          azPSVersion: "latest"

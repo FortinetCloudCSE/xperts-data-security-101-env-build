@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       UserCount:
-        description: 'Number of users to deploy (0-99)'
+        description: 'Number of users to deploy (0-99), recommend only 15 per run'
         required: true
         default: '0'
         type: string
@@ -64,7 +64,7 @@ jobs:
       - name: Terraform Validate
         id: validate
         working-directory: ./terraform
-        run: terraform validate
+        run: terraform validate -no-color
 
       - name: Terraform Plan
         id: plan
@@ -72,9 +72,7 @@ jobs:
         run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -no-color -out=tfplan
 
       - name: Terraform Apply
-        if: |
-          (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
-          (github.event_name == 'workflow_dispatch')
+        if: (github.event_name == 'workflow_dispatch')
         id: apply
         working-directory: ./terraform
-        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ vars.ENV_USER_COUNT }}" -var="user_start=${{ vars.ENV_USER_START }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -auto-approve -no-color tfplan
+        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -auto-approve -no-color tfplan

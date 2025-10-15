@@ -1,12 +1,7 @@
 name: PowerShell Azure
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+
   workflow_dispatch:
     inputs:
       UserCount:
@@ -20,7 +15,7 @@ on:
         default: '0'
         type: string
 jobs:
-  terraform:
+  PowerShell:
     permissions:
       id-token: write
       contents: read
@@ -57,3 +52,5 @@ jobs:
         run: |
           Install-Module -Name Az.Resources -AllowClobber -Force -Scope CurrentUser
           Get-AzResourceGroup
+          Connect-MgGraph
+          Get-EntraSubscribedSku | Where-Object { $_.SkuPartNumber -eq "WACONEDRIVESTANDARD" } | Select-Object *

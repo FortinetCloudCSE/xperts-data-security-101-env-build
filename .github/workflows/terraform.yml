@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       UserCount:
-        description: 'Number of users to deploy (0-99), recommend only 15 per run'
+        description: 'Number of users and environments to deploy (1-99), recommend only 15 per run. A count of 0 will destroy all users and environments.'
         required: true
         default: '0'
         type: string
       UserStart:
         description: 'Starting index for user numbering'
         required: false
-        default: '0'
+        default: '10'
         type: string
 jobs:
   terraform:

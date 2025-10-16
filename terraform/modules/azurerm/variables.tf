@@ -17,3 +17,9 @@ variable "location" {
   description = "The Azure region to deploy resources in"
   type        = string
 }
+
+variable "user_principal_domain" {
+  description = "The domain name for the Azure AD tenant"
+  type        = string
+  default     = ""
+}

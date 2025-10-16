@@ -1,5 +1,13 @@
 locals {
 
+  user_common = {
+    user_principal_domain = var.user_principal_domain
+    display_name_ext      = var.username
+    password              = var.password
+    usage_location        = "US"
+    account_enabled       = true
+  }
+
   public_ips = {
     "pip-bastion" = {
       resource_group_name = azurerm_resource_group.resource_group.name
@@ -219,6 +227,17 @@ Set-ItemProperty -Path $registryPath -Name ManagedBookmarks -Value $bookmarkJson
 Write-Host "ManagedBookmarks registry key created and bookmarks added."
 
 EOT
+}
+
+resource "azuread_user" "user" {
+
+  user_principal_name = format("%s%s", var.username, local.user_common["user_principal_domain"])
+  display_name        = format("%s%s", var.username, local.user_common["display_name_ext"])
+  mail_nickname       = format("%s%s", var.username, local.user_common["display_name_ext"])
+  mail                = format("%s%s", var.username, local.user_common["user_principal_domain"])
+  password            = local.user_common["password"]
+  account_enabled     = local.user_common["account_enabled"]
+  usage_location      = local.user_common["usage_location"]
 }
 
 resource "azurerm_resource_group" "resource_group" {

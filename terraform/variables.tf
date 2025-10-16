@@ -1,18 +1,18 @@
 variable "username_prefix" {
   description = "Prefix for the username"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "user_count" {
   description = "Number of users to create"
   type        = string
-  default = "0"
+  default     = "0"
 }
 variable "user_start" {
   description = "Starting index for user numbering"
   type        = string
-  default = "0"
+  default     = "0"
 }
 
 variable "rg-suffix" {
@@ -35,6 +35,12 @@ variable "password" {
 
 variable "subscription_id" {
   description = "Azure Subscription ID"
+  type        = string
+  default     = ""
+}
+
+variable "user_principal_domain" {
+  description = "The domain name for the Azure AD tenant"
   type        = string
   default     = ""
 }

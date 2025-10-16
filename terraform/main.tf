@@ -4,9 +4,10 @@ locals {
   user_count      = tonumber(var.user_count)
   user_start      = tonumber(var.user_start)
 
-  rg-suffix = var.rg-suffix
-  location  = var.location
-  password  = var.password
+  rg-suffix             = var.rg-suffix
+  location              = var.location
+  password              = var.password
+  user_principal_domain = var.user_principal_domain
 
   environments = {
     for i in range(local.user_start, local.user_start + local.user_count) :
@@ -19,10 +20,11 @@ module "module_data-security-101" {
 
   source = "./modules/azurerm"
 
-  location  = local.location
-  rg-suffix = local.rg-suffix
-  username  = each.value.username
-  password  = local.password
+  location              = local.location
+  rg-suffix             = local.rg-suffix
+  username              = each.value.username
+  password              = local.password
+  user_principal_domain = local.user_principal_domain
 }
 
 output "bastion_shareable_link" {

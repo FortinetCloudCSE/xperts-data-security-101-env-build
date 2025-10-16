@@ -63,10 +63,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform
-        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -no-color -out=tfplan
+        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -var="user_principal_domain=${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}" -no-color -out=tfplan
 
       - name: Terraform Apply
         if: (github.event_name == 'workflow_dispatch')
         id: apply
         working-directory: ./terraform
-        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -auto-approve -no-color tfplan
+        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -var="user_principal_domain=${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}" -auto-approve -no-color tfplan

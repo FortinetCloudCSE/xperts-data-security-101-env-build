@@ -240,6 +240,12 @@ resource "azuread_user" "user" {
   usage_location      = local.user_common["usage_location"]
 }
 
+resource "azuread_group_member" "group_member" {
+
+  group_object_id  = var.onedrive_license_group_object_id
+  member_object_id = azuread_user.user.object_id
+}
+
 resource "azurerm_resource_group" "resource_group" {
   name     = "${var.username}-${var.rg-suffix}"
   location = var.location

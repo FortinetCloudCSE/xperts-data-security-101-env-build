@@ -23,3 +23,9 @@ variable "user_principal_domain" {
   type        = string
   default     = ""
 }
+
+variable "onedrive_license_group_object_id" {
+  description = "The Entra ID object id of the group for OneDrive licenses"
+  type        = string
+  default     = ""
+}

@@ -20,11 +20,12 @@ module "module_data-security-101" {
 
   source = "./modules/azurerm"
 
-  location              = local.location
-  rg-suffix             = local.rg-suffix
-  username              = each.value.username
-  password              = local.password
-  user_principal_domain = local.user_principal_domain
+  location                         = local.location
+  rg-suffix                        = local.rg-suffix
+  username                         = each.value.username
+  password                         = local.password
+  user_principal_domain            = local.user_principal_domain
+  onedrive_license_group_object_id = var.onedrive_license_group_object_id
 }
 
 output "bastion_shareable_link" {

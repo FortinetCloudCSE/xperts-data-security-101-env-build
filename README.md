@@ -14,7 +14,7 @@ This workflow is run manually and requires two parameters to initiate the deploy
 
 Run Github Workflow [Terraform Azure Deployment](https://github.com/FortinetCloudCSE/xperts-data-security-101-env-build/actions/workflows/terraform.yml)
 
-[Run Workflow](./images/run-workflow.png)
+![Run Workflow](./images/run-workflow.png)
 
 - Number of Users to deploy
   - A value of zero will destroy any existing users and environments.

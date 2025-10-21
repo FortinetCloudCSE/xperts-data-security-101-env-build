@@ -24,12 +24,12 @@ jobs:
     steps:
       - name: Set up GitHub Actions variables
         run: |
-          if [[ ${{ github.event_name == 'workflow_dispatch' }} == true ]]; then
-            user_start=${{ inputs.UserStart }}
-            user_count=${{ inputs.UserCount }}
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            user_start="${{ inputs.UserStart }}"
+            user_count="${{ inputs.UserCount }}"
           else
-            user_start=${{ vars.ENV_USER_START }}
-            user_count=${{ vars.ENV_USER_COUNT }}
+            user_start="${{ vars.ENV_USER_START }}"
+            user_count="${{ vars.ENV_USER_COUNT }}"
           fi
 
           echo "user_start=$user_start" >> $GITHUB_ENV

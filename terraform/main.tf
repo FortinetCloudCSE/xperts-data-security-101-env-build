@@ -4,7 +4,7 @@ locals {
   user_count      = tonumber(var.user_count)
   user_start      = tonumber(var.user_start)
 
-  rg-suffix             = var.rg_suffix
+  rg_suffix             = var.rg_suffix
   location              = var.location
   password              = var.password
   user_principal_domain = var.user_principal_domain
@@ -21,7 +21,7 @@ module "module_data-security-101" {
   source = "./modules/azurerm"
 
   location                         = local.location
-  rg-suffix                        = local.rg-suffix
+  rg_suffix                        = local.rg_suffix
   username                         = each.value.username
   password                         = local.password
   user_principal_domain            = local.user_principal_domain

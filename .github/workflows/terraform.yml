@@ -63,10 +63,30 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform
-        run: terraform plan -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -var="user_principal_domain=${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}" -var="onedrive_license_group_object_id=${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}" -no-color -out=tfplan
+        run: terraform plan -no-color -out=tfplan
+        env:
+          TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_username_prefix: ${{ vars.ENV_USERNAME_PREFIX }}
+          TF_VAR_user_count: ${{ env.user_count }}
+          TF_VAR_user_start: ${{ env.user_start }}
+          TF_VAR_rg_suffix: ${{ vars.ENV_RG_SUFFIX }}
+          TF_VAR_location: ${{ vars.ENV_LOCATION }}
+          TF_VAR_password: ${{ vars.ENV_BASIC_PASSWORD }}
+          TF_VAR_user_principal_domain: ${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}
+          TF_VAR_onedrive_license_group_object_id: ${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}
 
       - name: Terraform Apply
         if: (github.event_name == 'workflow_dispatch')
         id: apply
         working-directory: ./terraform
-        run: terraform apply -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="username_prefix=${{ vars.ENV_USERNAME_PREFIX }}" -var="user_count=${{ env.user_count }}" -var="user_start=${{ env.user_start }}" -var="rg-suffix=${{ vars.ENV_RG_SUFFIX }}" -var="location=${{ vars.ENV_LOCATION }}" -var="password=${{ vars.ENV_BASIC_PASSWORD }}" -var="user_principal_domain=${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}" -var="onedrive_license_group_object_id=${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}" -auto-approve -parallelism=20 -no-color tfplan
+        run: terraform apply -auto-approve -parallelism=20 -no-color tfplan
+        env:
+          TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_username_prefix: ${{ vars.ENV_USERNAME_PREFIX }}
+          TF_VAR_user_count: ${{ env.user_count }}
+          TF_VAR_user_start: ${{ env.user_start }}
+          TF_VAR_rg_suffix: ${{ vars.ENV_RG_SUFFIX }}
+          TF_VAR_location: ${{ vars.ENV_LOCATION }}
+          TF_VAR_password: ${{ vars.ENV_BASIC_PASSWORD }}
+          TF_VAR_user_principal_domain: ${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}
+          TF_VAR_onedrive_license_group_object_id: ${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}

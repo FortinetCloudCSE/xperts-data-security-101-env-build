@@ -247,7 +247,7 @@ resource "azuread_group_member" "group_member" {
 }
 
 resource "azurerm_resource_group" "resource_group" {
-  name     = "${var.username}-${var.rg-suffix}"
+  name     = "${var.username}-${var.rg_suffix}"
   location = var.location
 
   lifecycle {

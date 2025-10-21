@@ -4,7 +4,7 @@ locals {
   user_count      = tonumber(var.user_count)
   user_start      = tonumber(var.user_start)
 
-  rg-suffix             = var.rg-suffix
+  rg-suffix             = var.rg_suffix
   location              = var.location
   password              = var.password
   user_principal_domain = var.user_principal_domain

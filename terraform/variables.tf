@@ -15,7 +15,7 @@ variable "user_start" {
   default     = "0"
 }
 
-variable "rg-suffix" {
+variable "rg_suffix" {
   description = "Suffix for the resource group name"
   type        = string
   default     = ""

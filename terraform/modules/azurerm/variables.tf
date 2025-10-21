@@ -8,7 +8,7 @@ variable "password" {
   type        = string
 }
 
-variable "rg-suffix" {
+variable "rg_suffix" {
   description = "The suffix to use for all resource group names"
   type        = string
 }

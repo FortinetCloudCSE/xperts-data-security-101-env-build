@@ -90,3 +90,9 @@ jobs:
           TF_VAR_password: ${{ vars.ENV_BASIC_PASSWORD }}
           TF_VAR_user_principal_domain: ${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}
           TF_VAR_onedrive_license_group_object_id: ${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}
+
+      - name: Terraform Output
+        if: (github.event_name == 'workflow_dispatch')
+        id: output
+        working-directory: ./terraform
+        run: terraform output bastion_shareable_link -no-color

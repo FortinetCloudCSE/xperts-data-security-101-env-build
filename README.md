@@ -12,7 +12,7 @@ This workflow is run manually and requires two parameters to initiate the deploy
 
 ### Run Github Workflow
 
-Run Github Workflow [Terraform Azure Deployment](https://github.com/FortinetCloudCSE/xperts-data-security-101-env-build/actions/workflows/terraform.yml)
+Run Github Workflow [Terraform Azure Deployment - Data Security 101 Env Build](https://github.com/FortinetCloudCSE/xperts-data-security-101-env-build/actions/workflows/terraform.yml)
 
 ![Run Workflow](./images/run-workflow.png)
 
@@ -34,7 +34,7 @@ Run Github Workflow [Terraform Azure Deployment](https://github.com/FortinetClou
 
 ### Workflow output
 
-Workflow output is found at the end of the **terraform apply** step.
+Workflow output is found at the end of the **terraform output** step.
 
 Output consists of the user credentials and bastion host links
 

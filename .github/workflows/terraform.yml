@@ -22,6 +22,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: ENV Build Values
+        run: |
+          echo "user_count:            ${{ github.event.inputs.UserCount }}"
+          echo "user_start:            ${{ github.event.inputs.UserStart }}"
+          echo "username_prefix:       ${{ vars.ENV_USERNAME_PREFIX }}"
+          echo "rg_suffix:             ${{ vars.ENV_RG_SUFFIX }}"
+          echo "location:              ${{ vars.ENV_LOCATION }}"
+          echo "password:              ${{ vars.ENV_BASIC_PASSWORD }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 

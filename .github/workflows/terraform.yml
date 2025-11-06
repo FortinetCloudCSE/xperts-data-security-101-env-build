@@ -1,4 +1,4 @@
-name: Terraform Azure Deployment
+name: Terraform Azure Deployment - Data Security 101 Env Build
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
         default: '10'
         type: string
 jobs:
-  terraform:
+  ENV_BUILD:
     permissions:
       id-token: write
       contents: read

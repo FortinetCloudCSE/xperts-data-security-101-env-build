@@ -29,5 +29,5 @@ module "module_data-security-101" {
 }
 
 output "bastion_shareable_link" {
-  value = [for key, rg in module.module_data-security-101 : format("%s, %s, %s", key, var.password, rg.bastion_shareable_links.value[0].bsl)]
+  value = [for key, rg in module.module_data-security-101 : format("%s, %s, onedrive username: %s@fortinetcloud.onmicrosoft.com, %s", key, var.password, key, rg.bastion_shareable_links.value[0].bsl)]
 }

@@ -72,17 +72,17 @@ locals {
       resource_group_name = azurerm_resource_group.resource_group.name
       location            = azurerm_resource_group.resource_group.location
 
-      name = "vm-dlp-win"
+      name = "vm-${var.username}-win"
       size = "Standard_D2s_v4"
 
       network_interface_ids = [azurerm_network_interface.network_interface["nic-win-vm"].id]
 
       admin_username = var.username
       admin_password = var.password
-      computer_name  = "vm-dlp-win"
+      computer_name  = "vm-${var.username}-win"
 
       os_disk = {
-        name                 = "disk-os-vm-dlp-win"
+        name                 = "disk-os-vm-${var.username}-win"
         caching              = "ReadWrite"
         storage_account_type = "Standard_LRS"
       }

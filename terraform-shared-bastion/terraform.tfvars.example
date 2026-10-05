@@ -1,0 +1,19 @@
+subscription_id = "your-subscription-id"
+tenant_id       = "your-tenant-id"
+user_principal_domain = "@your.domain.com"
+
+location = "azure-location"
+onedrive_license_group_object_id = "object_id-of-onedrive-license-group"
+
+
+username = "username"
+password = "password"
+
+env_count = "number-of-environments"
+env_start = "environment-start-index"
+
+tags = {
+  Username           = "your-username"
+  Environment        = "environment-name"
+  Duration           = "duration-in-days"
+}

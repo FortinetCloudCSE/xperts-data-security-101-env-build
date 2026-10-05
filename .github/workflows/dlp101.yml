@@ -1,0 +1,105 @@
+name: Azure Deployment - DLP 101 Env Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      EnvNamePrefix:
+        description: "Prefix for the DLP environments, this will also be used for the state file and resource group naming."
+        required: true
+        type: string
+      EnvCount:
+        description: "Number of DLP environments to deploy (1-99), A count of 0 will destroy all environments."
+        required: true
+        default: "0"
+        type: string
+      EnvStart:
+        description: "Starting index for environment numbering"
+        required: false
+        default: "20"
+        type: string
+      TerraformApply:
+        description: "Terraform Apply, if false only the Terraform Plan will be executed (true/false)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - false
+          - true
+jobs:
+  ENV_BUILD:
+    permissions:
+      id-token: write
+      contents: read
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ENV Build Values
+        run: |
+          echo "env_prefix: ${{ github.event.inputs.EnvNamePrefix }}"
+          echo "env_count:  ${{ github.event.inputs.EnvCount }}"
+          echo "env_start:  ${{ github.event.inputs.EnvStart }}"
+          echo "location:   ${{ vars.ENV_LOCATION }}"
+          echo "username:   ${{ vars.ENV_USERNAME }}"
+          echo "password:   ${{ vars.ENV_PASSWORD }}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Terraform Init
+        id: init
+        working-directory: ./terraform
+        run: terraform init -no-color -backend-config="resource_group_name=${{ secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.BACKEND_AZURE_STORAGE_CONTAINER_NAME }}" -backend-config="key=${{ github.event.inputs.EnvNamePrefix }}.terraform.tfstate"
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: ./terraform
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ./terraform
+        run: terraform plan -lock=false -no-color -out=tfplan
+        env:
+          TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_username: ${{ vars.ENV_USERNAME }}
+          TF_VAR_env_count: ${{ github.event.inputs.EnvCount }}
+          TF_VAR_env_start: ${{ github.event.inputs.EnvStart }}
+          TF_VAR_location: ${{ vars.ENV_LOCATION }}
+          TF_VAR_password: ${{ vars.ENV_PASSWORD }}
+          TF_VAR_user_principal_domain: ${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}
+          TF_VAR_onedrive_license_group_object_id: ${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}
+
+
+      - name: Terraform Apply
+        if: (github.event.inputs.TerraformApply == 'true')
+        id: apply
+        working-directory: ./terraform
+        run: terraform apply -replace azapi_resource_action.resource_action_create_link -auto-approve -parallelism=20 -no-color tfplan
+        env:
+          TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_username: ${{ vars.ENV_USERNAME }}
+          TF_VAR_env_count: ${{ github.event.inputs.EnvCount }}
+          TF_VAR_env_start: ${{ github.event.inputs.EnvStart }}
+          TF_VAR_location: ${{ vars.ENV_LOCATION }}
+          TF_VAR_password: ${{ vars.ENV_PASSWORD }}
+          TF_VAR_user_principal_domain: ${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}
+          TF_VAR_onedrive_license_group_object_id: ${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}
+
+      - name: Terraform Output
+        id: output
+        working-directory: ./terraform
+        run: terraform output shareable_links -no-color

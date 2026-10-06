@@ -2,7 +2,7 @@
 
 Data Security 101 - Environment build on Azure
 
-To deploy/destroy "XPERTS Data Security 101" environments in the Azure Fortinet Cloud Training tenant use the Github Workflow "Azure Deployment - DLP 1-1 Env Build".
+To deploy/destroy "XPERTS Data Security 101" environments in the Azure Fortinet Cloud Training tenant use the Github Workflow "Azure Deployment - DLP 101 Env Build".
 
 The workflow utilizes the terraform in this repository to manage Azure user accounts and resources required for the XPERTS Data Security 101 session.
 

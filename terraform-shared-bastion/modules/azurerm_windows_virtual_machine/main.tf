@@ -140,7 +140,7 @@ resource "azuread_group_member" "group_member" {
 resource "azurerm_resource_group" "resource_group" {
   name     = var.resource_group_name
   location = var.location
-
+  tags     = var.tags
   lifecycle {
     ignore_changes = [tags]
   }

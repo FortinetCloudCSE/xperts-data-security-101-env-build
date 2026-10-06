@@ -6,7 +6,9 @@ locals {
   password = var.password
   username = var.username
 
-  tags = var.tags
+  xperts_session = "dlp101"
+  var_tags       = var.tags
+  tags           = merge(local.var_tags, { XPERTS_SESSION = local.xperts_session })
 
   environments = {
     for i in range(local.env_start, local.env_start + local.env_count) :
@@ -18,13 +20,13 @@ locals {
 
   bastion_hosts = {
     bastion_host = {
-      resource_group_name = "rg-xperts-dlp101-bastion"
+      resource_group_name = "rg-xperts-${local.xperts_session}-bastion"
       location            = local.location
-      name                = "bastion-dlp101"
-      vnet_name           = "vnet-dlp101-bastion"
+      name                = "bastion-${local.xperts_session}"
+      vnet_name           = "vnet-${local.xperts_session}-bastion"
       vnet_address_space  = ["10.10.0.0/16"]
       bastion_subnet_cidr = "10.10.10.0/24"
-      public_ip_name      = "bastion-dlp101-pip"
+      public_ip_name      = "bastion-${local.xperts_session}-pip"
       tags                = local.tags
     }
   }
@@ -56,20 +58,19 @@ module "module_windows_virtual_machine" {
 
   source = "./modules/azurerm_windows_virtual_machine"
 
-  resource_group_name = "rg-xperts-dlp101-${each.value.username}"
+  resource_group_name = "rg-xperts-${local.xperts_session}-${each.value.username}"
   location            = local.location
   tags                = local.tags
 
   onedrive_license_group_object_id = var.onedrive_license_group_object_id
   user_principal_domain            = var.user_principal_domain
 
-  vnet_name          = "vnet-dlp101"
+  vnet_name          = "vnet-${local.xperts_session}"
   vnet_address_space = ["${each.value.vnet_address_space}/24"]
-  vm_subnet_name     = "snet-dlp101"
+  vm_subnet_name     = "snet-${local.xperts_session}"
   vm_subnet_cidr     = "${each.value.vnet_address_space}/24"
 
   subscription_id = var.subscription_id
-  tenant_id       = var.tenant_id
 
   windows_vm_name = "vm-windows-${each.value.username}"
   vm_size         = "Standard_D2s_v5"

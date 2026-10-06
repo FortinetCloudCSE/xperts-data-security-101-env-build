@@ -37,10 +37,6 @@ variable "subscription_id" {
   type = string
 }
 
-variable "tenant_id" {
-  type = string
-}
-
 variable "windows_vm_name" {
   description = "Windows virtual machine name."
   type        = string

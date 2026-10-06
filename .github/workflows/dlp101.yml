@@ -40,7 +40,7 @@ jobs:
           echo "env_count:  ${{ github.event.inputs.EnvCount }}"
           echo "env_start:  ${{ github.event.inputs.EnvStart }}"
           echo "location:   ${{ vars.ENV_LOCATION }}"
-          echo "username:   ${{ vars.ENV_USERNAME }}"
+          echo "username:   ${{ github.event.inputs.EnvNamePrefix }}"
           echo "password:   ${{ vars.ENV_PASSWORD }}"
 
       - name: Checkout repository
@@ -74,7 +74,7 @@ jobs:
         env:
           TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          TF_VAR_username: ${{ vars.ENV_USERNAME }}
+          TF_VAR_username: ${{ github.event.inputs.EnvNamePrefix }}
           TF_VAR_env_count: ${{ github.event.inputs.EnvCount }}
           TF_VAR_env_start: ${{ github.event.inputs.EnvStart }}
           TF_VAR_location: ${{ vars.ENV_LOCATION }}
@@ -91,7 +91,7 @@ jobs:
         env:
           TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          TF_VAR_username: ${{ vars.ENV_USERNAME }}
+          TF_VAR_username: ${{ github.event.inputs.EnvNamePrefix }}
           TF_VAR_env_count: ${{ github.event.inputs.EnvCount }}
           TF_VAR_env_start: ${{ github.event.inputs.EnvStart }}
           TF_VAR_location: ${{ vars.ENV_LOCATION }}

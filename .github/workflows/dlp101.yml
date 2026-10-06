@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       EnvNamePrefix:
-        description: "Prefix for the DLP environments, this will also be used for the state file and resource group naming."
+        description: "User Name Prefix for the DLP environments, this will also be used for terraform state file and resource group naming."
         required: true
         type: string
       EnvCount:
-        description: "Number of DLP environments to deploy (1-99), A count of 0 will destroy all environments."
+        description: "Number of DLP environments to deploy (1-99), A count of 0 will destroy all environments. When using more than one run to create environments ensure the number of environments is the sum of all previous runs. For Example if you previously created 3 environments and want to create 2 more, set this value to 5."
         required: true
         default: "0"
         type: string

@@ -94,9 +94,9 @@ jobs:
         working-directory: ./terraform-shared-bastion
         run: terraform state list
 
-      - name: Terraform State
+      - name: Terraform Taint
         if: (github.event.inputs.TerraformApply == 'true')
-        id: state
+        id: taint
         working-directory: ./terraform-shared-bastion
         run: terraform state taint 'azapi_resource_action.resource_action_create_link["bastion_host"]'
 

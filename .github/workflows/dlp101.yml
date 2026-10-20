@@ -90,7 +90,7 @@ jobs:
 
       - name: Terraform Taint
         if: (github.event.inputs.TerraformApply == 'true')
-        id: apply
+        id: taint
         working-directory: ./terraform-shared-bastion
         run: terraform taint azapi_resource_action.resource_action_create_link
 

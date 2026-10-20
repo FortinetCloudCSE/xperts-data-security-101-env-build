@@ -88,6 +88,12 @@ jobs:
         working-directory: ./terraform-shared-bastion
         run: terraform validate -no-color
 
+      - name: Terraform Taint
+        if: (github.event.inputs.TerraformApply == 'true')
+        id: apply
+        working-directory: ./terraform-shared-bastion
+        run: terraform taint azapi_resource_action.resource_action_create_link
+
       - name: Terraform Plan
         id: plan
         working-directory: ./terraform-shared-bastion
@@ -102,7 +108,6 @@ jobs:
           TF_VAR_password: ${{ vars.ENV_PASSWORD }}
           TF_VAR_user_principal_domain: ${{ vars.ENV_USER_PRINCIPAL_DOMAIN }}
           TF_VAR_onedrive_license_group_object_id: ${{ secrets.AZURE_ONEDRIVE_LICENSE_GROUP_OBJECT_ID }}
-
 
       - name: Terraform Apply
         if: (github.event.inputs.TerraformApply == 'true')

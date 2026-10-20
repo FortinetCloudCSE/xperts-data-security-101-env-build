@@ -88,6 +88,12 @@ jobs:
         working-directory: ./terraform-shared-bastion
         run: terraform validate -no-color
 
+      - name: Terraform State
+        if: (github.event.inputs.TerraformApply == 'true')
+        id: state
+        working-directory: ./terraform-shared-bastion
+        run: terraform state list
+
       - name: Terraform Taint
         if: (github.event.inputs.TerraformApply == 'true')
         id: taint

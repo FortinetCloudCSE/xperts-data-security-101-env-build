@@ -65,12 +65,13 @@ jobs:
           $BastionName = "bastion-dlp101"
 
           Write-Host "Fetching existing Bastion shareable links..."
-          $links = Get-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName
+          $links = Get-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -ErrorAction SilentlyContinue
 
           if ($links) {
               Write-Host "Found shareable links. Removing them now..."
+
               foreach ($link in $links) {
-                  $vmId = $link.Vm.Id
+                  $vmId = $link.VmId
                   Write-Host "Deleting shareable link for VM: $vmId"
                   Remove-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -TargetVmId $vmId -Force
               }

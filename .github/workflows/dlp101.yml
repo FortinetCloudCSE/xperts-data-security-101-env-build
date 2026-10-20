@@ -57,6 +57,26 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
+      - name: Get and Delete Bastion Shareable Links
+        if: (github.event.inputs.TerraformApply == 'true')
+        shell: pwsh
+        run: |
+          $ResourceGroupName = "rg-xperts-dlp101-bastion"
+          $BastionName = "bastion-dlp101"
+
+          Write-Host "Fetching existing Bastion shareable links..."
+          $links = Get-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName
+
+          if ($links) {
+              Write-Host "Found shareable links. Removing them now..."
+              foreach ($link in $links) {
+                  $vmId = $link.Vm.Id
+                  Write-Host "Deleting shareable link for VM: $vmId"
+                  Remove-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -TargetVmId $vmId -Force
+              }
+          } else {
+              Write-Host "No shareable links found."
+          }
       - name: Terraform Init
         id: init
         working-directory: ./terraform-shared-bastion

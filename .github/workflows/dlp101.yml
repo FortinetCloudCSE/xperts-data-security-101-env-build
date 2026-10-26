@@ -73,7 +73,7 @@ jobs:
               foreach ($link in $links) {
                   $vmId = $link.VmId
                   Write-Host "Deleting shareable link for VM: $vmId"
-                  Remove-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -TargetVmId $vmId -Force
+                  Remove-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -TargetVmId $vmId -AsJob -Force
               }
           } else {
               Write-Host "No shareable links found."

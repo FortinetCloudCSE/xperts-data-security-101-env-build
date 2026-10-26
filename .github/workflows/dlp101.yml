@@ -75,6 +75,8 @@ jobs:
                   Write-Host "Deleting shareable link for VM: $vmId"
                   Remove-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -TargetVmId $vmId -AsJob -Force
               }
+              Start-Sleep -Seconds 60
+              Get-Jobs
           } else {
               Write-Host "No shareable links found."
           }
@@ -129,4 +131,4 @@ jobs:
       - name: Terraform Output
         id: output
         working-directory: ./terraform-shared-bastion
-        run: terraform output -raw shareable_links
+        run: terraform output shareable_links

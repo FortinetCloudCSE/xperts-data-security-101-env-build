@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       EnvNamePrefix:
-        description: "User Name Prefix for the DLP environments, this will also be used for terraform state file and resource group naming."
+        description: "User Name Prefix for the environments, this will also be used for terraform state file and resource group naming."
         required: true
         type: string
       EnvCount:
-        description: "Number of DLP environments to deploy (1-99), 0 destroys all environments. When using multiple runs to create environments the value is the sum of new and all previous runs. E.G., if previously 3 environments were created and 2 more are needed, enter 5."
+        description: "Number of environments to deploy (1-99), 0 destroys all environments. When using multiple runs to create environments the value is the sum of new and all previous runs. E.G., if previously 3 environments were created and 2 more are needed, enter 5."
         required: true
         default: "0"
         type: string
@@ -78,6 +78,7 @@ jobs:
           } else {
               Write-Host "No shareable links found."
           }
+
       - name: Terraform Init
         id: init
         working-directory: ./terraform-shared-bastion
@@ -93,12 +94,6 @@ jobs:
         id: state
         working-directory: ./terraform-shared-bastion
         run: terraform state list
-
-      - name: Terraform Taint
-        if: (github.event.inputs.TerraformApply == 'true')
-        id: taint
-        working-directory: ./terraform-shared-bastion
-        run: terraform taint 'azapi_resource_action.resource_action_create_link["bastion_host"]'
 
       - name: Terraform Plan
         id: plan
@@ -119,7 +114,7 @@ jobs:
         if: (github.event.inputs.TerraformApply == 'true')
         id: apply
         working-directory: ./terraform-shared-bastion
-        run: terraform apply -auto-approve -parallelism=20 -no-color tfplan
+        run: terraform apply -replace 'azapi_resource_action.resource_action_create_link["bastion_host"]' -auto-approve -parallelism=20 -no-color
         env:
           TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
@@ -134,4 +129,4 @@ jobs:
       - name: Terraform Output
         id: output
         working-directory: ./terraform-shared-bastion
-        run: terraform output shareable_links -no-color
+        run: terraform output -raw shareable_links

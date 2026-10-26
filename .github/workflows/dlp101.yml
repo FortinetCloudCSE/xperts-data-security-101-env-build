@@ -76,7 +76,7 @@ jobs:
                   Remove-AzBastionShareableLink -ResourceGroupName $ResourceGroupName -Name $BastionName -TargetVmId $vmId -AsJob -Force
               }
               Start-Sleep -Seconds 60
-              Get-Jobs
+              Get-Job
           } else {
               Write-Host "No shareable links found."
           }

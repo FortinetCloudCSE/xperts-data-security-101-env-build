@@ -1,5 +1,10 @@
 # local directories
 .vscode/
+commands.txt
+users.txt
+PnP*
+sample-data.xlsx
+__pycache__
 
 # Local .terraform directories
 .terraform/

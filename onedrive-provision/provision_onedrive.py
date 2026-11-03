@@ -15,9 +15,10 @@ SharePoint only accepts app-only tokens obtained with a certificate. A client se
 for the Graph calls, but the provisioning request will be rejected with 401.
 
 SharePoint can refuse CreatePersonalSiteEnqueueBulk for tokens issued to custom app registrations
-("Attempted to perform an unauthorized operation"), even delegated ones from a tenant admin. Use --admin-login to
-send it as a signed-in SharePoint Administrator through Microsoft's SharePoint Online
-Management Shell client (the app Request-SPOPersonalSite uses); no setup on your app is needed.
+("Attempted to perform an unauthorized operation"), even delegated ones from a tenant admin. Use
+--admin-login to send it as a signed-in SharePoint Administrator through Microsoft's SharePoint
+Online Management Shell client (the app Request-SPOPersonalSite uses); no setup on your app is
+needed.
 --admin-client-id overrides the client used for that sign-in.
 
 Configuration (flags or environment variables):
@@ -32,6 +33,7 @@ Usage:
     python provision_onedrive.py user@contoso.com [user2@contoso.com ...] [--timeout 600]
     python provision_onedrive.py --file users.txt    # one UPN per line, # comments allowed
 """
+
 import argparse
 import base64
 import json
@@ -42,7 +44,11 @@ from urllib.parse import urlparse
 from xml.sax.saxutils import escape as xml_escape
 
 import requests
-from azure.identity import CertificateCredential, ClientSecretCredential, DeviceCodeCredential
+from azure.identity import (
+    CertificateCredential,
+    ClientSecretCredential,
+    DeviceCodeCredential,
+)
 
 GRAPH = "https://graph.microsoft.com/v1.0"
 GRAPH_SCOPE = "https://graph.microsoft.com/.default"
@@ -51,23 +57,38 @@ SPO_SHELL_CLIENT_ID = "9bc3ab49-b65d-410a-85ad-de819febfddc"
 
 
 def build_credential(args):
+    """Build login credential based on provided arguments."""
     if not args.tenant_id or not args.client_id:
-        sys.exit("Tenant ID and client ID are required (--tenant-id/--client-id or AZURE_* env vars).")
+        sys.exit(
+            "Tenant ID and client ID are required (--tenant-id/--client-id or AZURE_* env vars)."
+        )
     if args.cert_path:
-        return CertificateCredential(
-            args.tenant_id, args.client_id, args.cert_path, password=args.cert_password
-        ), True
+        return (
+            CertificateCredential(
+                args.tenant_id,
+                args.client_id,
+                args.cert_path,
+                password=args.cert_password,
+            ),
+            True,
+        )
     if args.client_secret:
         print(
             "Warning: using a client secret. SharePoint rejects secret-based app-only tokens, "
             "so the provisioning request will likely fail; use --cert-path.",
             file=sys.stderr,
         )
-        return ClientSecretCredential(args.tenant_id, args.client_id, args.client_secret), False
-    sys.exit("Provide a certificate (--cert-path) or a client secret (--client-secret).")
+        return (
+            ClientSecretCredential(args.tenant_id, args.client_id, args.client_secret),
+            False,
+        )
+    sys.exit(
+        "Provide a certificate (--cert-path) or a client secret (--client-secret)."
+    )
 
 
 def graph_get(cred, path, **kw):
+    """Perform a GET request to the Microsoft Graph API with the provided credential."""
     return requests.get(
         f"{GRAPH}{path}",
         headers={"Authorization": f"Bearer {cred.get_token(GRAPH_SCOPE).token}"},
@@ -87,6 +108,7 @@ def admin_host(cred, override=None):
 
 
 def has_sharepoint_license(cred, user_id):
+    """Check if the user has a SharePoint license."""
     r = graph_get(cred, f"/users/{user_id}/licenseDetails")
     if not r.ok:
         return None  # unknown; don't block on it
@@ -106,13 +128,23 @@ def token_claims(access_token):
 
 def probe_admin_site(resource, access_token):
     """Show how SharePoint sees this token on the admin site (diagnostics only)."""
-    headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json;odata=nometadata"}
-    for path in ("/_api/web/currentuser?$select=LoginName,IsSiteAdmin", "/_api/SPO.Tenant?$select=RootSiteUrl"):
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/json;odata=nometadata",
+    }
+    for path in (
+        "/_api/web/currentuser?$select=LoginName,IsSiteAdmin",
+        "/_api/SPO.Tenant?$select=RootSiteUrl",
+    ):
         r = requests.get(f"{resource}{path}", headers=headers, timeout=60)
-        print(f"  probe {path.split('?')[0]}: {r.status_code} {r.text[:200]}", file=sys.stderr)
+        print(
+            f"  probe {path.split('?')[0]}: {r.status_code} {r.text[:200]}",
+            file=sys.stderr,
+        )
 
 
-# CSOM request equivalent to Request-SPOPersonalSite. The TypeId is SP.UserProfiles.ProfileLoader,
+# CSOM request equivalent to Request-SPOPersonalSite.
+# The TypeId is SP.UserProfiles.ProfileLoader,
 # taken from SharePoint's SP.UserProfiles.js.
 CSOM_ENQUEUE = """<Request AddExpandoFieldTypeSuffix="true" SchemaVersion="15.0.0.0" LibraryVersion="16.0.0.0" \
 ApplicationName="provision_onedrive" xmlns="http://schemas.microsoft.com/sharepoint/clientquery/2009">
@@ -128,6 +160,7 @@ ENQUEUE_BATCH = 200  # max users per CreatePersonalSiteEnqueueBulk call
 
 
 def enqueue_provisioning(cred, host, emails):
+    """Enqueue provisioning for a list of emails."""
     resource = f"https://{host}"
     access_token = cred.get_token(resource + "/.default").token
     objects = "".join(f'<Object Type="String">{xml_escape(e)}</Object>' for e in emails)
@@ -144,29 +177,44 @@ def enqueue_provisioning(cred, host, emails):
             error = f"{info.get('ErrorTypeName')}: {info.get('ErrorMessage')}"
     if error:
         claims = token_claims(access_token)
-        print(f"Provisioning request failed ({r.status_code}): {error}", file=sys.stderr)
+        print(
+            f"Provisioning request failed ({r.status_code}): {error}", file=sys.stderr
+        )
         print(f"  endpoint:    {resource}", file=sys.stderr)
-        print(f"  signed in:   {claims.get('upn') or claims.get('unique_name') or '(app-only)'}", file=sys.stderr)
+        print(
+            f"  signed in:   {claims.get('upn') or claims.get('unique_name') or '(app-only)'}",
+            file=sys.stderr,
+        )
         print(f"  token aud:   {claims.get('aud')}", file=sys.stderr)
         print(f"  token roles: {claims.get('roles')}", file=sys.stderr)
         print(f"  token scp:   {claims.get('scp')}", file=sys.stderr)
         probe_admin_site(resource, access_token)
         if "roles" in claims and "Sites.FullControl.All" not in claims["roles"]:
-            print("  -> Add SharePoint (not Microsoft Graph) Sites.FullControl.All as an application "
-                    "permission and grant admin consent.", file=sys.stderr)
+            print(
+                "  -> Add SharePoint (not Microsoft Graph) Sites.FullControl.All as an application "
+                "permission and grant admin consent.",
+                file=sys.stderr,
+            )
         elif "roles" in claims:
-            print("  -> The app-only token has the right permission, so SharePoint is refusing app-only "
-                    "access to this API. Re-run with --admin-login.", file=sys.stderr)
+            print(
+                " -> The app-only token has the right permission, SharePoint is refusing app-only "
+                "access to this API. Re-run with --admin-login.",
+                file=sys.stderr,
+            )
         elif "AllSites.FullControl" in claims.get("scp", ""):
-            print("  -> The delegated token is valid. If the SPO.Tenant probe returned 403, the signed-in "
-                    "account lacks tenant admin rights (activate a PIM-eligible role first); if it returned "
-                    "200, admin rights are fine and SharePoint is refusing this specific API.",
-                    file=sys.stderr)
+            print(
+                "  -> The delegated token is valid. If the SPO.Tenant probe returned 403,"
+                "the signed-in account lacks tenant admin rights (activate a PIM-eligible"
+                "role first); if it returned 200, admin rights are fine and"
+                "SharePoint is refusing this specific API.",
+                file=sys.stderr,
+            )
         sys.exit(1)
     print(f"Provisioning queued for {len(emails)} user(s) via {host}.")
 
 
 def get_drive(cred, user_id):
+    """Get the OneDrive drive for a specific user."""
     r = graph_get(cred, f"/users/{user_id}/drive", params={"$select": "id,webUrl"})
     return r.json() if r.ok else None
 
@@ -178,29 +226,53 @@ def read_user_file(path):
 
 
 def dedupe(users):
+    """Remove duplicate users, case-insensitive."""
     seen = set()
     return [u for u in users if not (u.lower() in seen or seen.add(u.lower()))]
 
 
 def main():
+    """Main entry point for the script."""
     env = os.environ.get
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("users", nargs="*", help="userPrincipalName (or object ID) of each user")
-    p.add_argument("-f", "--file", help="File with one userPrincipalName per line (# comments allowed)")
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    p.add_argument(
+        "users", nargs="*", help="userPrincipalName (or object ID) of each user"
+    )
+    p.add_argument(
+        "-f",
+        "--file",
+        help="File with one userPrincipalName per line (# comments allowed)",
+    )
     p.add_argument("--tenant-id", default=env("AZURE_TENANT_ID"))
     p.add_argument("--client-id", default=env("AZURE_CLIENT_ID"))
     p.add_argument("--cert-path", default=env("AZURE_CLIENT_CERTIFICATE_PATH"))
     p.add_argument("--cert-password", default=env("AZURE_CLIENT_CERTIFICATE_PASSWORD"))
     p.add_argument("--client-secret", default=env("AZURE_CLIENT_SECRET"))
-    p.add_argument("--tenant-name", help="SharePoint tenant name (contoso in contoso.sharepoint.com); "
-                    "detected from Graph if omitted")
-    p.add_argument("--timeout", type=int, default=600, help="Seconds to wait for the drive (default 600)")
+    p.add_argument(
+        "--tenant-name",
+        help="SharePoint tenant name (contoso in contoso.sharepoint.com); "
+        "detected from Graph if omitted",
+    )
+    p.add_argument(
+        "--timeout",
+        type=int,
+        default=600,
+        help="Seconds to wait for the drive (default 600)",
+    )
     p.add_argument("--no-wait", action="store_true", help="Queue provisioning and exit")
-    p.add_argument("--admin-login", action="store_true",
-                    help="Send the provisioning request as a signed-in SharePoint admin (device code) "
-                        "instead of app-only")
-    p.add_argument("--admin-client-id", default=SPO_SHELL_CLIENT_ID,
-                    help="Client ID for --admin-login (default: SharePoint Online Management Shell)")
+    p.add_argument(
+        "--admin-login",
+        action="store_true",
+        help="Send the provisioning request as a signed-in SharePoint admin (device code) "
+        "instead of app-only",
+    )
+    p.add_argument(
+        "--admin-client-id",
+        default=SPO_SHELL_CLIENT_ID,
+        help="Client ID for --admin-login (default: SharePoint Online Management Shell)",
+    )
     args = p.parse_args()
 
     users = list(args.users)
@@ -214,11 +286,19 @@ def main():
 
     results = {}  # input name -> outcome
     pending = {}  # user id -> input name, users that need provisioning
-    upns = {}     # user id -> userPrincipalName
+    upns = {}  # user id -> userPrincipalName
     for name in users:
-        r = graph_get(cred, f"/users/{name}", params={"$select": "id,displayName,userPrincipalName"})
+        r = graph_get(
+            cred,
+            f"/users/{name}",
+            params={"$select": "id,displayName,userPrincipalName"},
+        )
         if not r.ok:
-            results[name] = "user not found" if r.status_code == 404 else f"lookup failed ({r.status_code})"
+            results[name] = (
+                "user not found"
+                if r.status_code == 404
+                else f"lookup failed ({r.status_code})"
+            )
             print(f"{name}: {results[name]}")
             continue
         user = r.json()
@@ -239,23 +319,32 @@ def main():
     print(f"\nSummary ({len(users)} user(s)):")
     for name in users:
         print(f"  {name}: {results[name]}")
-    ok = ("already provisioned", "provisioned", "queued") if args.no_wait else ("already provisioned", "provisioned")
+    ok = (
+        ("already provisioned", "provisioned", "queued")
+        if args.no_wait
+        else ("already provisioned", "provisioned")
+    )
     if not all(r.startswith(ok) for r in results.values()):
         sys.exit(1)
 
 
 def provision(args, cred, has_cert, pending, upns, results):
+    """Provision OneDrive for a set of pending users."""
     if args.admin_login:
-        sp_cred = DeviceCodeCredential(client_id=args.admin_client_id, tenant_id=args.tenant_id)
+        sp_cred = DeviceCodeCredential(
+            client_id=args.admin_client_id, tenant_id=args.tenant_id
+        )
     elif has_cert:
         sp_cred = cred
     else:
-        sys.exit("OneDrive not provisioned; provisioning requires --cert-path or --admin-login.")
+        sys.exit(
+            "OneDrive not provisioned; provisioning requires --cert-path or --admin-login."
+        )
 
     host = admin_host(cred, args.tenant_name)
     emails = [upns[uid] for uid in pending]
     for i in range(0, len(emails), ENQUEUE_BATCH):
-        enqueue_provisioning(sp_cred, host, emails[i:i + ENQUEUE_BATCH])
+        enqueue_provisioning(sp_cred, host, emails[i : i + ENQUEUE_BATCH])
     if args.no_wait:
         return
 
@@ -275,6 +364,7 @@ def provision(args, cred, has_cert, pending, upns, results):
 
     for name in pending.values():
         results[name] = "queued, not ready yet (can take up to 24h; re-run to check)"
+
 
 if __name__ == "__main__":
     main()
